@@ -60,6 +60,12 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json",
+            "allowedHosts": [
+              "singlemindedly-strigiform-marguerita.ngrok-free.dev"
+            ]
+          },
           "configurations": {
             "production": {
               "buildTarget": "hotel-eventos:build:production"
