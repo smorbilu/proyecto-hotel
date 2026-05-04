@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { catchError, forkJoin, map, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Cuarto, CuartoEstado, TipoCuarto, Cliente, Grupo, Factura, Reservacion, DashboardStats } from '../models';
 
@@ -12,7 +12,67 @@ export class DataService {
 
   // ── Dashboard ──────────────────────────────────────────────────────────────
   getDashboardStats(): Observable<DashboardStats> {
-    return this.http.get<DashboardStats>(`${API}/dashboard`);
+    return this.http.get<DashboardStats>(`${API}/dashboard`).pipe(
+      catchError(() => this.buildDashboardStats()),
+    );
+  }
+
+  private buildDashboardStats(): Observable<DashboardStats> {
+    return forkJoin({
+      cuartos: this.getCuartos(),
+      clientes: this.getClientes(),
+      reservaciones: this.getReservaciones(),
+      facturas: this.getFacturas(),
+    }).pipe(
+      map(({ cuartos, clientes, reservaciones, facturas }) => {
+        const totalCuartos = cuartos.length;
+        const cuartosOcupados = cuartos.filter(cuarto => cuarto.id_estado === 2).length;
+        const cuartosDisponibles = cuartos.filter(cuarto => cuarto.id_estado === 1).length;
+        const pctOcupacion = totalCuartos > 0 ? Math.round((cuartosOcupados / totalCuartos) * 100) : 0;
+
+        const ocupacionPorTipoMap = new Map<string, { tipo_cuarto: string; total: number; ocupados: number; pct_ocupacion: number }>();
+        for (const cuarto of cuartos) {
+          const current = ocupacionPorTipoMap.get(cuarto.tipo_cuarto) ?? {
+            tipo_cuarto: cuarto.tipo_cuarto,
+            total: 0,
+            ocupados: 0,
+            pct_ocupacion: 0,
+          };
+
+          current.total += 1;
+          if (cuarto.id_estado === 2) {
+            current.ocupados += 1;
+          }
+          current.pct_ocupacion = Math.round((current.ocupados / current.total) * 100);
+          ocupacionPorTipoMap.set(cuarto.tipo_cuarto, current);
+        }
+
+        const reservasRecientes = [...reservaciones]
+          .sort((left, right) => new Date(right.fecha_entrada).getTime() - new Date(left.fecha_entrada).getTime())
+          .slice(0, 5)
+          .map(reserva => ({
+            id_reserva: reserva.id_reserva,
+            nombre: reserva.nombre,
+            apellido: reserva.apellido,
+            no_cuarto: reserva.no_cuarto,
+            tipo_cuarto: reserva.tipo_cuarto,
+            fecha_entrada: reserva.fecha_entrada,
+            fecha_salida: reserva.fecha_salida,
+          }));
+
+        return {
+          totalCuartos,
+          cuartosOcupados,
+          cuartosDisponibles,
+          pctOcupacion,
+          totalClientes: clientes.length,
+          totalReservas: reservaciones.length,
+          totalIngresos: facturas.reduce((total, factura) => total + factura.monto_deposit, 0),
+          ocupacionPorTipo: [...ocupacionPorTipoMap.values()],
+          reservasRecientes,
+        };
+      }),
+    );
   }
 
   // ── Cuartos ────────────────────────────────────────────────────────────────
