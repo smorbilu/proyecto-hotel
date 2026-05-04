@@ -1,0 +1,136 @@
+<div class="page-container fade-in-up">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-text">
+      <h1>Dashboard</h1>
+      <p class="subtitle">Bienvenido al Sistema de Gestión — Hotel Eventos</p>
+    </div>
+    <div class="header-actions">
+      <span class="today-label">{{ today | date:'EEEE, d MMMM y':'':'es' }}</span>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="empty-state"><mat-icon class="spin">refresh</mat-icon><p>Cargando datos…</p></div>
+  }
+
+  @if (!loading() && stats()) {
+    <!-- KPI Cards -->
+    <div class="card-grid cols-4 kpi-grid">
+
+      <mat-card class="kpi-card primary">
+        <div class="kpi-icon primary"><mat-icon>bed</mat-icon></div>
+        <div class="kpi-value">{{ stats()!.totalCuartos }}</div>
+        <div class="kpi-label">Total Habitaciones</div>
+        <div class="kpi-trend up">
+          <mat-icon>arrow_upward</mat-icon>
+          {{ stats()!.cuartosDisponibles }} disponibles
+        </div>
+      </mat-card>
+
+      <mat-card class="kpi-card success">
+        <div class="kpi-icon success"><mat-icon>event_available</mat-icon></div>
+        <div class="kpi-value">{{ stats()!.totalReservas }}</div>
+        <div class="kpi-label">Reservaciones</div>
+        <div class="kpi-trend up">
+          <mat-icon>check_circle</mat-icon>
+          {{ stats()!.pctOcupacion }}% ocupación
+        </div>
+      </mat-card>
+
+      <mat-card class="kpi-card accent">
+        <div class="kpi-icon accent"><mat-icon>people</mat-icon></div>
+        <div class="kpi-value">{{ stats()!.totalClientes }}</div>
+        <div class="kpi-label">Clientes Registrados</div>
+        <div class="kpi-trend up">
+          <mat-icon>person</mat-icon>
+          En base de datos
+        </div>
+      </mat-card>
+
+      <mat-card class="kpi-card warning">
+        <div class="kpi-icon warning"><mat-icon>payments</mat-icon></div>
+        <div class="kpi-value">
+          {{ stats()!.totalIngresos | currency:'USD':'symbol':'1.0-0' }}
+        </div>
+        <div class="kpi-label">Ingresos en Depósitos</div>
+        <div class="kpi-trend up">
+          <mat-icon>arrow_upward</mat-icon>
+          Total acumulado
+        </div>
+      </mat-card>
+
+    </div>
+
+    <!-- Ocupación por tipo + Últimas reservas -->
+    <div class="card-grid cols-2 mid-grid">
+
+      <mat-card class="panel-card">
+        <h3 class="panel-title">Ocupación por Tipo</h3>
+        @for (item of stats()!.ocupacionPorTipo; track item.tipo_cuarto) {
+          <div class="bar-row">
+            <div class="bar-header">
+              <span class="bar-label">{{ item.tipo_cuarto }}</span>
+              <span class="bar-count">{{ item.ocupados }} / {{ item.total }}</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" [style.width.%]="item.pct_ocupacion" [style.background]="'var(--color-primary)'"></div>
+            </div>
+          </div>
+        }
+      </mat-card>
+
+      <mat-card class="panel-card">
+        <div class="panel-header">
+          <h3 class="panel-title">Reservaciones Recientes</h3>
+          <a mat-button color="primary" routerLink="/reservaciones" class="ver-todas">Ver todas</a>
+        </div>
+
+        @for (r of stats()!.reservasRecientes; track r.id_reserva) {
+          <div class="reserva-row">
+            <div class="reserva-avatar">
+              <mat-icon>person</mat-icon>
+            </div>
+            <div class="reserva-info">
+              <span class="reserva-nombre">{{ r.nombre }} {{ r.apellido }}</span>
+              <span class="reserva-fechas">
+                Hab. {{ r.no_cuarto }} · {{ r.tipo_cuarto }}
+              </span>
+              <span class="reserva-fechas">
+                {{ r.fecha_entrada | date:'d MMM':'':'es' }} → {{ r.fecha_salida | date:'d MMM':'':'es' }}
+              </span>
+            </div>
+            <span class="status-badge confirmada">
+              <span class="dot"></span>Activa
+            </span>
+          </div>
+        } @empty {
+          <div class="empty-state">
+            <mat-icon>event_busy</mat-icon>
+            <p>Sin reservaciones</p>
+          </div>
+        }
+      </mat-card>
+
+    </div>
+
+    <!-- Accesos Rápidos -->
+    <mat-card class="panel-card">
+      <h3 class="panel-title">Accesos Rápidos</h3>
+      <div class="card-grid cols-4 quick-grid">
+        @for (link of quickLinks; track link.route) {
+          <a [routerLink]="link.route" class="quick-link">
+            <div class="quick-card" [style.background]="link.bg"
+                 (mouseenter)="onLinkEnter($event)"
+                 (mouseleave)="onLinkLeave($event)">
+              <mat-icon [style.color]="link.iconColor">{{ link.icon }}</mat-icon>
+              <span class="quick-label">{{ link.label }}</span>
+            </div>
+          </a>
+        }
+      </div>
+    </mat-card>
+  }
+
+</div>

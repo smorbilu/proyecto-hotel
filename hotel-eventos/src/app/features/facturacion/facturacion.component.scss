@@ -1,0 +1,60 @@
+.kpi-grid { margin-bottom: 24px; }
+
+.id-cell {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.reserva-cell { font-weight: 600; }
+
+.cliente-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .cliente-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(30, 58, 138, .1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-primary);
+    flex-shrink: 0;
+  }
+}
+
+.grupo-cell      { font-size: 13px; }
+.individual-cell { font-size: 13px; color: var(--color-muted-text); }
+
+.monto-cell {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--color-success);
+}
+
+.btn-print { color: var(--color-muted-text); }
+
+.col-actions { text-align: right; }
+
+// ── Dialog ────────────────────────────────────────────────────────────────────
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .45);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dialog-box {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  width: 540px;
+  max-width: 95vw;
+  box-shadow: var(--shadow-lg);
+}

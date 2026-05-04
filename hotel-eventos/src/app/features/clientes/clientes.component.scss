@@ -1,0 +1,54 @@
+.kpi-top {
+  margin-bottom: 24px;
+  max-width: 220px;
+}
+
+.row-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.nombre-cell { font-weight: 600; }
+
+.email-link {
+  color: var(--color-secondary);
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+}
+
+.reservas-count {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.col-actions { text-align: right; }
+
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .45);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dialog-box {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  width: 520px;
+  max-width: 95vw;
+  box-shadow: var(--shadow-lg);
+}
+
+.full-width { width: 100%; }

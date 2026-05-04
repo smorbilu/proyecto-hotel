@@ -1,0 +1,177 @@
+<div class="page-container fade-in-up">
+
+  <div class="page-header">
+    <div class="header-text">
+      <h1>Facturación</h1>
+      <p class="subtitle">Control de depósitos y pagos</p>
+    </div>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="openDialog()">
+        <mat-icon>add</mat-icon> Nueva Factura
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI financieros -->
+  <div class="card-grid cols-3 kpi-grid">
+    <mat-card class="kpi-card warning">
+      <div class="kpi-icon warning"><mat-icon>payments</mat-icon></div>
+      <div class="kpi-value">{{ totalIngresos() | currency:'USD':'symbol':'1.0-0' }}</div>
+      <div class="kpi-label">Total Depósitos</div>
+    </mat-card>
+    <mat-card class="kpi-card primary">
+      <div class="kpi-icon primary"><mat-icon>receipt_long</mat-icon></div>
+      <div class="kpi-value">{{ allFacturas().length }}</div>
+      <div class="kpi-label">Facturas Emitidas</div>
+    </mat-card>
+    <mat-card class="kpi-card success">
+      <div class="kpi-icon success"><mat-icon>trending_up</mat-icon></div>
+      <div class="kpi-value">{{ promedio() | currency:'USD':'symbol':'1.0-0' }}</div>
+      <div class="kpi-label">Promedio por Factura</div>
+    </mat-card>
+  </div>
+
+  <!-- Tabla -->
+  <div class="table-container">
+    <div class="table-actions">
+      <mat-form-field class="search-field" appearance="outline">
+        <mat-label>Buscar factura</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput [value]="search()" (input)="onSearch($event)"
+               placeholder="# factura, cliente...">
+      </mat-form-field>
+    </div>
+
+    <table mat-table [dataSource]="dataSource" matSort>
+
+      <ng-container matColumnDef="id_factura">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header># Factura</th>
+        <td mat-cell *matCellDef="let f">
+          <span class="id-cell">F-{{ f.id_factura | number:'4.0-0' }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="cliente">
+        <th mat-header-cell *matHeaderCellDef>Cliente</th>
+        <td mat-cell *matCellDef="let f">
+          @if (f.nombre) {
+            <div class="cliente-cell">
+              <div class="cliente-avatar">{{ f.nombre[0] }}</div>
+              <span>{{ f.nombre }} {{ f.apellido }}</span>
+            </div>
+          } @else {
+            <span class="individual-cell">—</span>
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="cuarto">
+        <th mat-header-cell *matHeaderCellDef>Habitación</th>
+        <td mat-cell *matCellDef="let f">
+          @if (f.no_cuarto) {
+            <span class="cuarto-num">{{ f.no_cuarto }}</span>
+          } @else {
+            <span>—</span>
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="grupo">
+        <th mat-header-cell *matHeaderCellDef>Grupo / Evento</th>
+        <td mat-cell *matCellDef="let f">
+          @if (f.nom_grupo) {
+            <span class="grupo-cell">{{ f.nom_grupo }}</span>
+          } @else {
+            <span class="individual-cell">Individual</span>
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="fecha_deposit">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha Depósito</th>
+        <td mat-cell *matCellDef="let f">
+          {{ f.fecha_deposit | date:'d MMM y':'':'es' }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="monto_deposit">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Monto</th>
+        <td mat-cell *matCellDef="let f">
+          <span class="monto-cell">{{ f.monto_deposit | currency:'USD':'symbol':'1.2-2' }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef class="col-actions">Acciones</th>
+        <td mat-cell *matCellDef="let f" class="col-actions">
+          <button mat-icon-button color="primary" matTooltip="Editar" (click)="openDialog(f)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" matTooltip="Eliminar" (click)="delete(f)">
+            <mat-icon>delete_outline</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td [attr.colspan]="columns.length">
+          <div class="empty-state">
+            <mat-icon>receipt_long</mat-icon>
+            <h3>Sin facturas</h3>
+            <p>Crea la primera factura con el botón superior.</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[8, 15, 25]" pageSize="8" showFirstLastButtons />
+  </div>
+
+  <!-- Dialog -->
+  @if (showDialog()) {
+    <div class="dialog-overlay" (click)="closeDialog()">
+      <div class="dialog-box" (click)="$event.stopPropagation()">
+
+        <div class="dialog-header">
+          <h2>{{ editing() ? 'Editar Factura' : 'Nueva Factura' }}</h2>
+          <button mat-icon-button (click)="closeDialog()"><mat-icon>close</mat-icon></button>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="save()" class="dialog-content">
+
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Fecha de Depósito</mat-label>
+              <input matInput [matDatepicker]="dp" formControlName="fecha_deposit">
+              <mat-datepicker-toggle matSuffix [for]="dp" />
+              <mat-datepicker #dp />
+              @if (form.get('fecha_deposit')?.hasError('required') && form.get('fecha_deposit')?.touched) {
+                <mat-error>Requerida</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Monto (USD)</mat-label>
+              <mat-icon matPrefix>attach_money</mat-icon>
+              <input matInput type="number" formControlName="monto_deposit" min="1" step="0.01">
+              @if (form.get('monto_deposit')?.hasError('min') && form.get('monto_deposit')?.touched) {
+                <mat-error>Debe ser mayor a 0</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="dialog-actions">
+            <button mat-button type="button" (click)="closeDialog()">Cancelar</button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+              {{ editing() ? 'Guardar' : 'Emitir Factura' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+</div>

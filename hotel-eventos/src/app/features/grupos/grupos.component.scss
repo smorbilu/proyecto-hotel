@@ -1,0 +1,117 @@
+.grupos-grid { margin-bottom: 24px; }
+
+// ── Grupo Card ────────────────────────────────────────────────────────────────
+.grupo-card {
+  padding: 24px;
+  transition: transform var(--transition), box-shadow var(--transition);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md) !important;
+  }
+}
+
+.grupo-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.grupo-left {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.grupo-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  mat-icon { color: #fff; }
+}
+
+.grupo-info {
+  .grupo-nombre {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--color-foreground);
+  }
+
+  .grupo-evento {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: var(--color-muted-text);
+    margin-top: 4px;
+
+    .evento-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+    }
+  }
+}
+
+.grupo-actions { display: flex; gap: 4px; }
+
+.grupo-stats {
+  display: flex;
+  gap: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--color-muted-text);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .stat-val {
+      font-size: 20px;
+      font-weight: 700;
+
+      &.primary { color: var(--color-primary); }
+      &.muted   { color: var(--color-muted-text); }
+    }
+  }
+}
+
+// ── Tabla ─────────────────────────────────────────────────────────────────────
+.id-cell    { font-weight: 700; color: var(--color-primary); }
+.nombre-cell { font-weight: 600; }
+.col-actions { text-align: right; }
+
+// ── Dialog ────────────────────────────────────────────────────────────────────
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .45);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dialog-box {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  width: 480px;
+  max-width: 95vw;
+  box-shadow: var(--shadow-lg);
+}
+
+.full-width { width: 100%; }

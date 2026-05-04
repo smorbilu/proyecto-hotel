@@ -1,0 +1,60 @@
+.kpi-grid { margin-bottom: 24px; }
+
+.id-cell {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.cliente-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .cliente-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(30, 58, 138, .1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--color-primary);
+    flex-shrink: 0;
+  }
+}
+
+.noches-cell { font-weight: 600; }
+
+.notas-cell {
+  display: block;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  color: var(--color-muted-text);
+}
+
+.col-actions { text-align: right; }
+
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .45);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dialog-box {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  width: 560px;
+  max-width: 95vw;
+  box-shadow: var(--shadow-lg);
+}
+
+.full-width { width: 100%; }

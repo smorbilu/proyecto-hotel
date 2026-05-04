@@ -1,0 +1,145 @@
+<div class="page-container fade-in-up">
+
+  <div class="page-header">
+    <div class="header-text">
+      <h1>Clientes</h1>
+      <p class="subtitle">Directorio de huéspedes y contactos</p>
+    </div>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="openDialog()">
+        <mat-icon>person_add</mat-icon> Nuevo Cliente
+      </button>
+    </div>
+  </div>
+
+  <!-- Conteo rápido -->
+  <mat-card class="kpi-card accent kpi-top">
+    <div class="kpi-icon accent"><mat-icon>people</mat-icon></div>
+    <div class="kpi-value">{{ allClientes().length }}</div>
+    <div class="kpi-label">Clientes Registrados</div>
+  </mat-card>
+
+  <!-- Tabla -->
+  <div class="table-container">
+    <div class="table-actions">
+      <mat-form-field class="search-field" appearance="outline">
+        <mat-label>Buscar cliente</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput [value]="search()" (input)="onSearch($event)"
+               placeholder="Nombre, email, teléfono...">
+      </mat-form-field>
+    </div>
+
+    <table mat-table [dataSource]="dataSource" matSort>
+
+      <ng-container matColumnDef="avatar">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let c">
+          <div class="row-avatar">{{ c.nombre[0] }}</div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+        <td mat-cell *matCellDef="let c">
+          <span class="nombre-cell">{{ c.nombre }} {{ c.apellido }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Correo Electrónico</th>
+        <td mat-cell *matCellDef="let c">
+          <a [href]="'mailto:' + c.email" class="email-link">{{ c.email }}</a>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="telefono">
+        <th mat-header-cell *matHeaderCellDef>Teléfono</th>
+        <td mat-cell *matCellDef="let c">{{ c.telefono }}</td>
+      </ng-container>
+
+<ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef class="col-actions">Acciones</th>
+        <td mat-cell *matCellDef="let c" class="col-actions">
+          <button mat-icon-button color="primary" matTooltip="Editar" (click)="openDialog(c)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" matTooltip="Eliminar" (click)="delete(c)">
+            <mat-icon>delete_outline</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td [attr.colspan]="columns.length">
+          <div class="empty-state">
+            <mat-icon>people_outline</mat-icon>
+            <h3>Sin clientes</h3>
+            <p>Registra el primer cliente con el botón superior.</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[8, 15, 25]" pageSize="8" showFirstLastButtons />
+  </div>
+
+  <!-- Dialog -->
+  @if (showDialog()) {
+    <div class="dialog-overlay" (click)="closeDialog()">
+      <div class="dialog-box" (click)="$event.stopPropagation()">
+
+        <div class="dialog-header">
+          <h2>{{ editing() ? 'Editar Cliente' : 'Nuevo Cliente' }}</h2>
+          <button mat-icon-button (click)="closeDialog()"><mat-icon>close</mat-icon></button>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="save()" class="dialog-content">
+
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre(s)</mat-label>
+              <input matInput formControlName="nombre">
+              @if (form.get('nombre')?.hasError('required') && form.get('nombre')?.touched) {
+                <mat-error>Requerido</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Apellido(s)</mat-label>
+              <input matInput formControlName="apellido">
+              @if (form.get('apellido')?.hasError('required') && form.get('apellido')?.touched) {
+                <mat-error>Requerido</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Correo Electrónico</mat-label>
+            <mat-icon matPrefix>email</mat-icon>
+            <input matInput type="email" formControlName="email" autocomplete="email">
+            @if (form.get('email')?.hasError('email') && form.get('email')?.touched) {
+              <mat-error>Correo inválido</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Teléfono</mat-label>
+            <mat-icon matPrefix>phone</mat-icon>
+            <input matInput type="tel" formControlName="telefono" autocomplete="tel">
+          </mat-form-field>
+
+          <div class="dialog-actions">
+            <button mat-button type="button" (click)="closeDialog()">Cancelar</button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+              {{ editing() ? 'Guardar' : 'Registrar Cliente' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+</div>

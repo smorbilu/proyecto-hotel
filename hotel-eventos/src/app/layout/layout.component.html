@@ -1,0 +1,83 @@
+<mat-sidenav-container class="app-sidenav-container">
+
+  <!-- ── Sidenav ──────────────────────────────────────────────────────────── -->
+  <mat-sidenav #sidenav class="app-sidenav"
+    [mode]="isMobile ? 'over' : 'side'"
+    [opened]="!isMobile">
+
+    <!-- Logo -->
+    <div class="sidenav-logo">
+      <div class="logo-icon">
+        <mat-icon>hotel</mat-icon>
+      </div>
+      <div class="logo-text">
+        <div class="hotel-name">Hotel Eventos</div>
+        <div class="hotel-sub">Sistema de Gestión</div>
+      </div>
+    </div>
+
+    <!-- Nav Principal -->
+    <div class="nav-section-label">Principal</div>
+    @for (item of mainNav; track item.route) {
+      <a class="nav-item"
+         [routerLink]="item.route"
+         routerLinkActive="active"
+         [routerLinkActiveOptions]="{ exact: item.route === '/' }"
+         (click)="isMobile && sidenav.close()">
+        <mat-icon>{{ item.icon }}</mat-icon>
+        {{ item.label }}
+      </a>
+    }
+
+    <!-- Nav Gestión -->
+    <div class="nav-section-label">Gestión</div>
+    @for (item of gestionNav; track item.route) {
+      <a class="nav-item"
+         [routerLink]="item.route"
+         routerLinkActive="active"
+         (click)="isMobile && sidenav.close()">
+        <mat-icon>{{ item.icon }}</mat-icon>
+        {{ item.label }}
+      </a>
+    }
+
+    <!-- Footer usuario -->
+    <div class="sidenav-footer">
+      <div class="user-info">
+        <div class="avatar">A</div>
+        <div>
+          <div class="name">Administrador</div>
+          <div class="role">Recepción</div>
+        </div>
+      </div>
+    </div>
+  </mat-sidenav>
+
+  <!-- ── Contenido principal ───────────────────────────────────────────────── -->
+  <mat-sidenav-content>
+
+    <!-- Toolbar -->
+    <mat-toolbar class="app-toolbar">
+      <button mat-icon-button (click)="sidenav.toggle()" aria-label="Abrir menú">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span class="toolbar-title">Hotel Eventos</span>
+      <span class="toolbar-spacer"></span>
+
+      <button mat-icon-button matTooltip="Notificaciones" aria-label="Notificaciones">
+        <mat-icon>notifications_none</mat-icon>
+      </button>
+      <button mat-icon-button matTooltip="Configuración" aria-label="Configuración">
+        <mat-icon>settings</mat-icon>
+      </button>
+      <div class="toolbar-avatar">A</div>
+    </mat-toolbar>
+
+    <!-- Vistas lazy -->
+    <div class="content-wrapper">
+      <router-outlet />
+    </div>
+
+  </mat-sidenav-content>
+
+</mat-sidenav-container>

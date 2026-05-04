@@ -1,0 +1,30 @@
+// ── Toolbar extras (clases locales) ──────────────────────────────────────────
+.toolbar-title {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  color: var(--color-primary);
+  margin-left: 8px;
+  letter-spacing: .03em;
+}
+
+.toolbar-spacer { flex: 1; }
+
+.toolbar-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  margin-left: 8px;
+  cursor: pointer;
+}
+
+.content-wrapper {
+  min-height: calc(100vh - 64px);
+  background: var(--color-background);
+}

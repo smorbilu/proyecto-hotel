@@ -1,0 +1,123 @@
+<div class="page-container fade-in-up">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-text">
+      <h1>Habitaciones</h1>
+      <p class="subtitle">Inventario fijo — 20 sencillas · 20 dobles · 10 suites · 2 banquetes</p>
+    </div>
+    <div class="header-actions">
+      <button mat-stroked-button (click)="load()">
+        <mat-icon>refresh</mat-icon> Actualizar
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats rápidas -->
+  <div class="card-grid cols-2 stats-grid">
+    <mat-card class="stat-card">
+      <div class="kpi-icon success"><mat-icon>check_circle</mat-icon></div>
+      <div>
+        <div class="kpi-value stat-value">{{ estadoStats().disponibles }}</div>
+        <div class="kpi-label">Disponibles</div>
+      </div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <div class="kpi-icon primary"><mat-icon>do_not_disturb_on</mat-icon></div>
+      <div>
+        <div class="kpi-value stat-value">{{ estadoStats().ocupados }}</div>
+        <div class="kpi-label">Ocupadas</div>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Tabla -->
+  <div class="table-container">
+
+    <div class="table-actions">
+      <mat-form-field class="search-field" appearance="outline">
+        <mat-label>Buscar habitación</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput [value]="search()" (input)="onSearch($event)"
+               placeholder="Nº, tipo, descripción...">
+      </mat-form-field>
+
+      <mat-form-field class="filter-field" appearance="outline">
+        <mat-label>Filtrar estado</mat-label>
+        <mat-select [value]="filterEstado()"
+                    (selectionChange)="onFilterEstado($event.value)">
+          <mat-option value="">Todos</mat-option>
+          <mat-option [value]="1">Disponible</mat-option>
+          <mat-option [value]="2">Ocupado</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <table mat-table [dataSource]="dataSource" matSort>
+
+      <ng-container matColumnDef="no_cuarto">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>N° Cuarto</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="cuarto-num">{{ row.no_cuarto }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="tipo_cuarto">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
+        <td mat-cell *matCellDef="let row">{{ row.tipo_cuarto }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="precio">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Precio / Noche</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="precio">{{ row.precio | currency:'USD':'symbol':'1.2-2' }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+        <td mat-cell *matCellDef="let row">
+          <span [class]="'status-badge ' + getEstadoSlug(row.id_estado)">
+            <span class="dot"></span>{{ row.estado | titlecase }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="descripcion">
+        <th mat-header-cell *matHeaderCellDef>Descripción</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="descripcion-cell">{{ row.descripcion }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef class="col-actions">Estado</th>
+        <td mat-cell *matCellDef="let row" class="col-actions">
+          <button mat-stroked-button [color]="row.id_estado === 1 ? 'warn' : 'primary'"
+                  [matTooltip]="row.id_estado === 1 ? 'Marcar Ocupada' : 'Liberar Cuarto'"
+                  (click)="toggleEstado(row)">
+            <mat-icon>{{ row.id_estado === 1 ? 'lock' : 'lock_open' }}</mat-icon>
+            {{ row.id_estado === 1 ? 'Ocupar' : 'Liberar' }}
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td [attr.colspan]="columns.length">
+          <div class="empty-state">
+            <mat-icon>bed</mat-icon>
+            <h3>Sin resultados</h3>
+            <p>No se encontraron habitaciones con los filtros aplicados.</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[10, 25, 52]" pageSize="10"
+                   showFirstLastButtons />
+  </div>
+
+</div>
