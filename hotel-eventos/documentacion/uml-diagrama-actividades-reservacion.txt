@@ -1,0 +1,49 @@
+DISENO DEL SISTEMA - DIAGRAMA DE ACTIVIDADES
+
+Proceso modelado:
+- Registrar reservacion individual
+
+Objetivo:
+- Representar el flujo de actividades del negocio desde que se captura una reservacion hasta que el cuarto queda ocupado, incluyendo la decision de disponibilidad.
+
+Texto para Lucidchart:
+- Crear un diagrama de actividades para el proceso Registrar reservacion individual.
+- El flujo inicia cuando el recepcionista decide registrar una reservacion.
+- Actividades: abrir modulo de reservaciones, seleccionar cliente, seleccionar habitacion, capturar fechas y notas, validar datos obligatorios, consultar disponibilidad del cuarto.
+- Decision: si el cuarto no esta disponible, mostrar mensaje de error y volver a seleccionar habitacion.
+- Si el cuarto esta disponible, registrar reservacion, actualizar estado del cuarto a ocupado, generar relacion cuarto_reserva, confirmar operacion y mostrar mensaje de exito.
+- El flujo termina con la reservacion registrada.
+
+Version PlantUML:
+@startuml
+start
+
+:Abrir modulo de reservaciones;
+:Seleccionar cliente;
+
+repeat
+  :Seleccionar habitacion;
+  :Capturar fecha de entrada, fecha de salida, descripcion y notas;
+  :Validar datos obligatorios;
+
+  if (Datos completos?) then (Si)
+    :Consultar disponibilidad del cuarto;
+    if (Cuarto disponible?) then (Si)
+      break
+    else (No)
+      :Mostrar mensaje de cuarto no disponible;
+      :Solicitar nueva seleccion de habitacion;
+    endif
+  else (No)
+    :Mostrar errores de validacion;
+    :Corregir datos capturados;
+  endif
+repeat while (Reservacion lista para registrar?) is (No)
+
+:Registrar reservacion;
+:Actualizar estado del cuarto a Ocupado;
+:Registrar relacion en cuarto_reserva;
+:Mostrar confirmacion de exito;
+stop
+
+@enduml

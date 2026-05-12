@@ -1,0 +1,241 @@
+ANALISIS DE REQUERIMIENTOS - HOTEL EVENTOS
+
+Sistema analizado:
+- Frontend Angular: hotel-eventos
+- Backend Node.js/Express: hotel-backend
+- Base de datos: HOTEL_EVENTOS.sql
+
+Actores del sistema
+- Recepcionista: administra clientes, habitaciones y reservaciones individuales.
+- Encargado de eventos: administra grupos y eventos asociados.
+- Cajero: registra y consulta facturas.
+- Gerente: consulta indicadores operativos y financieros en el dashboard.
+
+CASO DE USO 1: Registrar cliente
+Nombre:
+- Registrar cliente
+
+Actor(es):
+- Recepcionista
+
+Descripcion textual clara:
+- El recepcionista captura los datos basicos de un nuevo cliente para que pueda ser utilizado posteriormente en una reservacion. El sistema valida que al menos el nombre y el apellido hayan sido proporcionados y registra al cliente en la base de datos.
+
+Flujo principal:
+1. El recepcionista abre el modulo de clientes.
+2. El sistema muestra el listado actual de clientes.
+3. El recepcionista selecciona la opcion de crear cliente.
+4. El sistema presenta el formulario de captura.
+5. El recepcionista ingresa nombre, apellido, telefono y correo.
+6. El sistema valida los datos obligatorios.
+7. El sistema registra al cliente y actualiza el listado.
+
+Precondiciones:
+- El recepcionista tiene acceso al sistema.
+
+Postcondiciones:
+- El cliente queda disponible para futuras reservaciones.
+
+Diagrama de caso de uso:
+@startuml
+left to right direction
+actor Recepcionista
+rectangle "Sistema Hotel Eventos" {
+  usecase "Registrar cliente" as UC1
+}
+Recepcionista --> UC1
+@enduml
+
+
+CASO DE USO 2: Consultar disponibilidad y estado de habitaciones
+Nombre:
+- Consultar disponibilidad y estado de habitaciones
+
+Actor(es):
+- Recepcionista
+- Gerente
+
+Descripcion textual clara:
+- El actor consulta el inventario fijo de habitaciones y salones para conocer su tipo, precio, descripcion y estado actual. El sistema muestra habitaciones disponibles u ocupadas y permite filtrar la informacion para apoyar la toma de decisiones operativas.
+
+Flujo principal:
+1. El actor ingresa al modulo de habitaciones.
+2. El sistema recupera el inventario de cuartos con su tipo y estado.
+3. El actor aplica filtros por texto o estado.
+4. El sistema muestra los resultados coincidentes.
+
+Precondiciones:
+- Existen habitaciones registradas en el inventario fijo.
+
+Postcondiciones:
+- El actor obtiene informacion actualizada del estado de ocupacion.
+
+Diagrama de caso de uso:
+@startuml
+left to right direction
+actor Recepcionista
+actor Gerente
+rectangle "Sistema Hotel Eventos" {
+  usecase "Consultar disponibilidad y estado de habitaciones" as UC2
+}
+Recepcionista --> UC2
+Gerente --> UC2
+@enduml
+
+
+CASO DE USO 3: Registrar reservacion individual
+Nombre:
+- Registrar reservacion individual
+
+Actor(es):
+- Recepcionista
+
+Descripcion textual clara:
+- El recepcionista registra una reservacion para un cliente seleccionando una habitacion disponible y definiendo fechas de entrada y salida. El sistema valida la disponibilidad del cuarto, crea la reservacion y cambia automaticamente el estado de la habitacion a ocupado.
+
+Flujo principal:
+1. El recepcionista ingresa al modulo de reservaciones.
+2. El sistema muestra las reservaciones existentes y los clientes disponibles.
+3. El recepcionista selecciona un cliente.
+4. El sistema muestra solo habitaciones disponibles.
+5. El recepcionista selecciona la habitacion e ingresa fechas, descripcion y notas.
+6. El sistema valida la informacion requerida.
+7. El sistema confirma que la habitacion este disponible.
+8. El sistema registra la reservacion.
+9. El sistema actualiza el estado del cuarto a ocupado.
+10. El sistema muestra la reservacion creada.
+
+Flujo alterno:
+- Si la habitacion no esta disponible, el sistema rechaza la operacion y solicita elegir otra habitacion.
+
+Precondiciones:
+- Debe existir un cliente registrado.
+- Debe existir al menos una habitacion disponible.
+
+Postcondiciones:
+- La reservacion queda registrada.
+- La habitacion queda marcada como ocupada.
+
+Diagrama de caso de uso:
+@startuml
+left to right direction
+actor Recepcionista
+rectangle "Sistema Hotel Eventos" {
+  usecase "Registrar reservacion individual" as UC3
+  usecase "Validar disponibilidad de habitacion" as UC3A
+  usecase "Actualizar estado de habitacion" as UC3B
+}
+Recepcionista --> UC3
+UC3 .> UC3A : <<include>>
+UC3 .> UC3B : <<include>>
+@enduml
+
+
+CASO DE USO 4: Administrar grupos y eventos
+Nombre:
+- Administrar grupos y eventos
+
+Actor(es):
+- Encargado de eventos
+
+Descripcion textual clara:
+- El encargado de eventos registra, actualiza, consulta o elimina grupos asociados a eventos del hotel. Esta funcionalidad permite mantener organizada la informacion comercial y operativa de eventos especiales.
+
+Flujo principal:
+1. El encargado de eventos abre el modulo de grupos.
+2. El sistema muestra el listado de grupos registrados.
+3. El encargado decide crear, editar o eliminar un grupo.
+4. Si crea o edita, captura el nombre del grupo y el nombre del evento.
+5. El sistema valida la informacion y actualiza la base de datos.
+6. El sistema refresca el listado.
+
+Precondiciones:
+- El encargado de eventos tiene acceso al sistema.
+
+Postcondiciones:
+- La informacion del grupo o evento queda actualizada.
+
+Diagrama de caso de uso:
+@startuml
+left to right direction
+actor "Encargado de eventos" as Eventos
+rectangle "Sistema Hotel Eventos" {
+  usecase "Administrar grupos y eventos" as UC4
+}
+Eventos --> UC4
+@enduml
+
+
+CASO DE USO 5: Emitir factura
+Nombre:
+- Emitir factura
+
+Actor(es):
+- Cajero
+
+Descripcion textual clara:
+- El cajero registra una factura con fecha y monto de deposito para llevar control de ingresos. Posteriormente puede consultar, actualizar o eliminar facturas ya registradas. El sistema mantiene disponible esta informacion para el dashboard y para consulta operativa.
+
+Flujo principal:
+1. El cajero abre el modulo de facturacion.
+2. El sistema muestra el listado de facturas y el total de ingresos.
+3. El cajero selecciona la opcion de nueva factura.
+4. El sistema presenta el formulario de captura.
+5. El cajero registra fecha y monto.
+6. El sistema valida la informacion.
+7. El sistema guarda la factura y actualiza indicadores.
+
+Precondiciones:
+- El cajero tiene acceso al sistema.
+
+Postcondiciones:
+- La factura queda registrada y disponible para consulta.
+
+Diagrama de caso de uso:
+@startuml
+left to right direction
+actor Cajero
+rectangle "Sistema Hotel Eventos" {
+  usecase "Emitir factura" as UC5
+}
+Cajero --> UC5
+@enduml
+
+
+CASO DE USO 6: Consultar dashboard operativo
+Nombre:
+- Consultar dashboard operativo
+
+Actor(es):
+- Gerente
+
+Descripcion textual clara:
+- El gerente consulta un tablero con indicadores globales del hotel: total de cuartos, cuartos ocupados, cuartos disponibles, porcentaje de ocupacion, total de clientes, total de reservaciones, ingresos acumulados, ocupacion por tipo de cuarto y reservaciones recientes.
+
+Flujo principal:
+1. El gerente ingresa al dashboard.
+2. El sistema consolida la informacion operativa y financiera.
+3. El sistema presenta indicadores y resumenes visuales.
+4. El gerente usa la informacion para seguimiento del negocio.
+
+Precondiciones:
+- Existen datos operativos en el sistema.
+
+Postcondiciones:
+- El gerente obtiene una vista resumida del estado del hotel.
+
+Diagrama de caso de uso:
+@startuml
+left to right direction
+actor Gerente
+rectangle "Sistema Hotel Eventos" {
+  usecase "Consultar dashboard operativo" as UC6
+}
+Gerente --> UC6
+@enduml
+
+
+Observaciones de alcance
+- Los cuartos no se crean ni se eliminan desde el sistema; el inventario es fijo.
+- La funcionalidad principal del negocio gira en torno a clientes, reservaciones, grupos, facturacion y consulta de indicadores.
+- La cancelacion de una reservacion libera automaticamente la habitacion asociada.

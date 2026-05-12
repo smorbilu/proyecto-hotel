@@ -1,0 +1,114 @@
+DISENO DEL SISTEMA - DIAGRAMA DE CLASES
+
+Objetivo:
+- Representar las entidades principales del dominio y sus relaciones, de forma coherente con el backend y la base de datos del sistema Hotel Eventos.
+
+Texto para Lucidchart:
+- Crear un diagrama de clases UML del sistema Hotel Eventos con las clases Cliente, Reservacion, Cuarto, TipoCuarto, CuartoEstado, Factura, Grupo, CuartoReserva, GrupoReserva y FacturaReserva.
+- La clase Cliente debe tener los atributos id_cliente, nombre, apellido, telefono y email.
+- La clase Reservacion debe tener los atributos id_reserva, descripcion, fecha_entrada, fecha_salida, notas, id_cliente, id_factura e id_cuarto.
+- La clase Cuarto debe tener los atributos id_cuarto, no_cuarto, descripcion, id_tipo_cuarto e id_estado.
+- La clase TipoCuarto debe tener los atributos id_tipo_cuarto, tipo_cuarto y precio.
+- La clase CuartoEstado debe tener los atributos id_estado y estado.
+- La clase Factura debe tener los atributos id_factura, fecha_deposit y monto_deposit.
+- La clase Grupo debe tener los atributos id_grupo, nom_grupo y nom_evento.
+- La clase CuartoReserva debe tener los atributos id_cuarto_reser, id_cuarto e id_reserva.
+- La clase GrupoReserva debe tener los atributos id_grupo_reser, id_reserva e id_grupo.
+- La clase FacturaReserva debe tener los atributos id_factura_reser, id_factura, id_cuarto_reser e id_grupo_reser.
+- Relaciones:
+- Un Cliente puede tener cero o muchas Reservaciones y cada Reservacion pertenece a un Cliente.
+- Un Cuarto puede participar en cero o muchas Reservaciones y cada Reservacion usa un Cuarto.
+- Un TipoCuarto clasifica a uno o muchos Cuartos y cada Cuarto pertenece a un TipoCuarto.
+- Un CuartoEstado clasifica a uno o muchos Cuartos y cada Cuarto tiene un CuartoEstado.
+- Una Factura puede estar asociada a cero o muchas Reservaciones, y una Reservacion puede tener cero o una Factura.
+- Una Reservacion puede tener cero o una asociacion GrupoReserva; un Grupo puede participar en cero o muchas asociaciones GrupoReserva.
+- Una Reservacion puede tener una asociacion CuartoReserva y esta asocia la reservacion con un cuarto.
+- Una FacturaReserva vincula una Factura con una asociacion de cuarto reservada y opcionalmente con una asociacion de grupo.
+- Mostrar multiplicidades y nombres de relacion.
+
+Version PlantUML:
+@startuml
+skinparam classAttributeIconSize 0
+
+class Cliente {
+  id_cliente : int
+  nombre : string
+  apellido : string
+  telefono : int
+  email : string
+}
+
+class Reservacion {
+  id_reserva : int
+  descripcion : string
+  fecha_entrada : datetime
+  fecha_salida : datetime
+  notas : string
+  id_cliente : int
+  id_factura : int
+  id_cuarto : int
+}
+
+class Cuarto {
+  id_cuarto : int
+  no_cuarto : string
+  descripcion : string
+  id_tipo_cuarto : int
+  id_estado : int
+}
+
+class TipoCuarto {
+  id_tipo_cuarto : int
+  tipo_cuarto : string
+  precio : decimal
+}
+
+class CuartoEstado {
+  id_estado : int
+  estado : string
+}
+
+class Factura {
+  id_factura : int
+  fecha_deposit : datetime
+  monto_deposit : decimal
+}
+
+class Grupo {
+  id_grupo : int
+  nom_grupo : string
+  nom_evento : string
+}
+
+class CuartoReserva {
+  id_cuarto_reser : int
+  id_cuarto : int
+  id_reserva : int
+}
+
+class GrupoReserva {
+  id_grupo_reser : int
+  id_reserva : int
+  id_grupo : int
+}
+
+class FacturaReserva {
+  id_factura_reser : int
+  id_factura : int
+  id_cuarto_reser : int
+  id_grupo_reser : int
+}
+
+Cliente "1" -- "0..*" Reservacion : realiza
+Cuarto "1" -- "0..*" Reservacion : se_asigna_a
+TipoCuarto "1" -- "1..*" Cuarto : clasifica
+CuartoEstado "1" -- "1..*" Cuarto : define_estado
+Factura "0..1" -- "0..*" Reservacion : respalda
+Reservacion "1" -- "0..1" CuartoReserva : genera
+Cuarto "1" -- "0..*" CuartoReserva : participa
+Reservacion "1" -- "0..1" GrupoReserva : se_asocia
+Grupo "1" -- "0..*" GrupoReserva : organiza
+Factura "1" -- "0..*" FacturaReserva : vincula
+CuartoReserva "1" -- "0..*" FacturaReserva : detalle_cuarto
+GrupoReserva "0..1" -- "0..*" FacturaReserva : detalle_grupo
+@enduml
